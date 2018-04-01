@@ -5,10 +5,7 @@ import (
 )
 
 func TestGetDigestDockerHub(t *testing.T) {
-	client, err := New("https://index.docker.io", "", "")
-	if err != nil {
-		t.Errorf("failed to get registry, error: %s", err)
-	}
+	client := New("https://index.docker.io", "", "")
 
 	tags, err := client.Tags("karolisr/keel")
 	if err != nil {
@@ -24,10 +21,7 @@ func TestGetDigestDockerHub(t *testing.T) {
 func TestGetDigestArtifactory(t *testing.T) {
 	t.Skip()
 
-	client, err := New("https://keel-docker-local.jfrog.io", "", "")
-	if err != nil {
-		t.Fatalf("failed to get registry, error: %s", err)
-	}
+	client := New("https://keel-docker-local.jfrog.io", "", "")
 
 	tags, err := client.Tags("webhook-demo")
 	if err != nil {

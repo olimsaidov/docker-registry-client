@@ -30,10 +30,7 @@ func TestGetDigest(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	reg, err := New(ts.URL, "", "")
-	if err != nil {
-		t.Fatalf("failed to create registry: %s", err)
-	}
+	reg := New(ts.URL, "", "")
 
 	digest, err := reg.ManifestDigest(ts.URL, "notimportant")
 	if err != nil {
