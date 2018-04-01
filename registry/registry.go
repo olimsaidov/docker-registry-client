@@ -33,14 +33,13 @@ type Registry struct {
 }
 
 /*
- * Create a new Registry with the given URL and credentials, then Ping()s it
- * before returning it to verify that the registry is available.
+ * Create a new Registry with the given URL and credentials.
  *
  * You can, alternately, construct a Registry manually by populating the fields.
  * This passes http.DefaultTransport to WrapTransport when creating the
  * http.Client.
  */
-func New(registryUrl, username, password string) (*Registry, error) {
+func New(registryUrl, username, password string) *Registry {
 	transport := &http.Transport{
 		Proxy: http.ProxyFromEnvironment,
 		DialContext: (&net.Dialer{
@@ -60,7 +59,7 @@ func New(registryUrl, username, password string) (*Registry, error) {
  * Create a new Registry, as with New, using an http.Transport that disables
  * SSL certificate verification.
  */
-func NewInsecure(registryUrl, username, password string) (*Registry, error) {
+func NewInsecure(registryUrl, username, password string) *Registry {
 	insecureTransport := &http.Transport{
 		Proxy: http.ProxyFromEnvironment,
 		DialContext: (&net.Dialer{
@@ -86,11 +85,14 @@ func NewInsecure(registryUrl, username, password string) (*Registry, error) {
  * adds in support for OAuth bearer tokens and HTTP Basic auth, and sets up
  * error handling this library relies on.
  */
-func WrapTransport(transport http.RoundTripper, url, username, password string) http.RoundTripper {
+func WrapTransport(transport *http.Transport, url, username, password string) http.RoundTripper {
 	tokenTransport := &TokenTransport{
 		Transport: transport,
 		Username:  username,
 		Password:  password,
+		Client: &http.Client{
+			Transport: transport,
+		}, // client to retrieve tokens
 	}
 	basicAuthTransport := &BasicTransport{
 		Transport: tokenTransport,
@@ -104,8 +106,8 @@ func WrapTransport(transport http.RoundTripper, url, username, password string) 
 	return errorTransport
 }
 
-func newFromTransport(registryUrl, username, password string, transport *http.Transport, logf LogfCallback) (*Registry, error) {
-	url := strings.TrimSuffix(registryUrl, "/")
+func newFromTransport(registryURL, username, password string, transport *http.Transport, logf LogfCallback) *Registry {
+	url := strings.TrimSuffix(registryURL, "/")
 	registry := &Registry{
 		URL: url,
 		Client: &http.Client{
@@ -114,7 +116,7 @@ func newFromTransport(registryUrl, username, password string, transport *http.Tr
 		Logf: logf,
 	}
 
-	return registry, nil
+	return registry
 }
 
 func (r *Registry) url(pathTemplate string, args ...interface{}) string {
