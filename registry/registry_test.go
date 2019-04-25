@@ -1,6 +1,7 @@
 package registry
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -19,7 +20,7 @@ func TestGetDigestDockerHub(t *testing.T) {
 
 // Supply authentication details to test this
 func TestGetDigestArtifactory(t *testing.T) {
-	t.Skip()
+	// t.Skip()
 
 	client := New("https://keel-docker-local.jfrog.io", "", "")
 
@@ -31,4 +32,13 @@ func TestGetDigestArtifactory(t *testing.T) {
 	if len(tags) == 0 {
 		t.Errorf("no tags?")
 	}
+}
+
+func TestGetDockerHubManyTags(t *testing.T) {
+	client := New("https://quay.io", "", "")
+	tags, err := client.Tags("coreos/prometheus-operator")
+	if err != nil {
+		t.Errorf("error while getting repo: %s", err)
+	}
+	fmt.Println(tags)
 }
