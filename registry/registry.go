@@ -94,14 +94,8 @@ func WrapTransport(transport *http.Transport, url, username, password string) ht
 			Transport: transport,
 		}, // client to retrieve tokens
 	}
-	basicAuthTransport := &BasicTransport{
-		Transport: tokenTransport,
-		URL:       url,
-		Username:  username,
-		Password:  password,
-	}
 	errorTransport := &ErrorTransport{
-		Transport: basicAuthTransport,
+		Transport: tokenTransport,
 	}
 	return errorTransport
 }
